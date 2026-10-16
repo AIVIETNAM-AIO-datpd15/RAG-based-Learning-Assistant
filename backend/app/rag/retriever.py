@@ -153,11 +153,17 @@ def _select_flashcard_rows(
     if not rows:
         return []
 
-    resolved_count = flashcard_count or FLASHCARD_DEFAULT_COUNT
-    selected_chunk_limit = min(
-        len(rows),
-        min(FLASHCARD_MAX_SELECTED_CHUNKS, max(FLASHCARD_MIN_SELECTED_CHUNKS, resolved_count)),
-    )
+    if flashcard_count is None:
+        selected_chunk_limit = min(
+            len(rows),
+            min(FLASHCARD_MAX_SELECTED_CHUNKS, max(FLASHCARD_MIN_SELECTED_CHUNKS, FLASHCARD_DEFAULT_COUNT)),
+        )
+    else:
+        selected_chunk_limit = min(
+            len(rows),
+            min(FLASHCARD_MAX_SELECTED_CHUNKS, max(1, flashcard_count)),
+        )
+    resolved_count = selected_chunk_limit
     grouped_rows = _group_rows_by_document(rows)
     ordered_doc_ids = list(grouped_rows)
     if not ordered_doc_ids:
